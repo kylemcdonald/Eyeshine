@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		27A29CB912D6DC4E003B1CF9 /* ofxRleImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27A29CB812D6DC4E003B1CF9 /* ofxRleImage.cpp */; };
+		3D31AB8312D7D08E001F363C /* ofxRleImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D31AB8112D7D08E001F363C /* ofxRleImage.cpp */; };
 		3DABA30D12D6AE87007895F7 /* openCV.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DABA2E012D6AE87007895F7 /* openCV.a */; };
 		3DABA31D12D6AE87007895F7 /* ofxCvColorImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DABA2F812D6AE87007895F7 /* ofxCvColorImage.cpp */; };
 		3DABA31E12D6AE87007895F7 /* ofxCvContourFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DABA2FB12D6AE87007895F7 /* ofxCvContourFinder.cpp */; };
@@ -90,7 +90,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		27A29CB812D6DC4E003B1CF9 /* ofxRleImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxRleImage.cpp; sourceTree = "<group>"; };
+		3D31AB8112D7D08E001F363C /* ofxRleImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxRleImage.cpp; path = ../addons/ofxRle/src/ofxRleImage.cpp; sourceTree = SOURCE_ROOT; };
+		3D31AB8212D7D08E001F363C /* ofxRleImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxRleImage.h; path = ../addons/ofxRle/src/ofxRleImage.h; sourceTree = SOURCE_ROOT; };
 		3DABA2C212D6AE87007895F7 /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
 		3DABA2C612D6AE87007895F7 /* cv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cv.h; sourceTree = "<group>"; };
 		3DABA2C712D6AE87007895F7 /* cv.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cv.hpp; sourceTree = "<group>"; };
@@ -125,7 +126,6 @@
 		3DABA30412D6AE87007895F7 /* ofxCvShortImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCvShortImage.cpp; sourceTree = "<group>"; };
 		3DABA30512D6AE87007895F7 /* ofxCvShortImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxCvShortImage.h; sourceTree = "<group>"; };
 		3DABA30612D6AE87007895F7 /* ofxOpenCv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOpenCv.h; sourceTree = "<group>"; };
-		3DABA33C12D6B0F4007895F7 /* ofxRleImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxRleImage.h; sourceTree = "<group>"; };
 		3DE6217D12D655BE00333F19 /* dc1394.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dc1394.h; sourceTree = "<group>"; };
 		3DE6217E12D655BE00333F19 /* dc1394_camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dc1394_camera.h; sourceTree = "<group>"; };
 		3DE6217F12D655BE00333F19 /* dc1394_capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dc1394_capture.h; sourceTree = "<group>"; };
@@ -229,6 +229,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D31AB7F12D7D08E001F363C /* ofxRle */ = {
+			isa = PBXGroup;
+			children = (
+				3D31AB8012D7D08E001F363C /* src */,
+			);
+			name = ofxRle;
+			path = ../addons/ofxRle;
+			sourceTree = SOURCE_ROOT;
+		};
+		3D31AB8012D7D08E001F363C /* src */ = {
+			isa = PBXGroup;
+			children = (
+				3D31AB8112D7D08E001F363C /* ofxRleImage.cpp */,
+				3D31AB8212D7D08E001F363C /* ofxRleImage.h */,
+			);
+			name = src;
+			path = ../addons/ofxRle/src;
+			sourceTree = SOURCE_ROOT;
+		};
 		3DABA2C112D6AE87007895F7 /* ofxOpenCv */ = {
 			isa = PBXGroup;
 			children = (
@@ -419,6 +438,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				3D31AB7F12D7D08E001F363C /* ofxRle */,
 				3DABA2C112D6AE87007895F7 /* ofxOpenCv */,
 				3DE6215312D655BE00333F19 /* ofxLibdc */,
 			);
@@ -620,8 +640,6 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* testApp.h */,
 				E4B69E1E0A3A1BDC003C02F2 /* testApp.cpp */,
-				3DABA33C12D6B0F4007895F7 /* ofxRleImage.h */,
-				27A29CB812D6DC4E003B1CF9 /* ofxRleImage.cpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -798,7 +816,7 @@
 				3DABA32012D6AE87007895F7 /* ofxCvGrayscaleImage.cpp in Sources */,
 				3DABA32112D6AE87007895F7 /* ofxCvImage.cpp in Sources */,
 				3DABA32212D6AE87007895F7 /* ofxCvShortImage.cpp in Sources */,
-				27A29CB912D6DC4E003B1CF9 /* ofxRleImage.cpp in Sources */,
+				3D31AB8312D7D08E001F363C /* ofxRleImage.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

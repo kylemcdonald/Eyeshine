@@ -3,7 +3,7 @@
 void testApp::setup() {
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	camera.setFormat7(true);
-	camera.setSize(1024, 4);
+	camera.setSize(752, 480);
 	camera.setup();
 	camera.setMaxFramerate();
 }
