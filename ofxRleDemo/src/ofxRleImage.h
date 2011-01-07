@@ -8,14 +8,26 @@ public:
 };
 
 class ofxRleImage {
+	 friend ostream& operator<<(ostream& out, const ofxRleImage& img);
+	 friend istream& operator>>(istream& in, ofxRleImage& img);
+	
+private:
+	void decompress();
+	
 protected:
 	unsigned int width, height;
-	vector<int> data;
+	vector<unsigned int> data;
 	vector<RlePoint2d> lines;
 	
-public:	
-	void setup(ofImage& img);
-	void draw();
+public:
+	void compress(ofImage& img);
+	void draw() const;
+	unsigned int getWidth() const;
+	unsigned int getHeight() const;
+	
+	void save(string filename) const;
+	void load(string filename);
 	
 	static bool useDrawOffset;
+	static bool useFastEncoding;
 };

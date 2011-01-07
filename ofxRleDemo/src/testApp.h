@@ -10,7 +10,7 @@ public:
 	void update();
 	void draw();
 	
-	ofxRleImage rleImage;
+	ofxRleImage rleImage, loaded;
 	
 	ofImage eyeshineDemoImage;
 };

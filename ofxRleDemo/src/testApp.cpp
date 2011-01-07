@@ -2,7 +2,11 @@
 
 void testApp::setup(){
 	eyeshineDemoImage.loadImage("eyeshine_demo.png");
-	rleImage.setup(eyeshineDemoImage);
+	rleImage.compress(eyeshineDemoImage);
+	rleImage.save("output.rle");
+	
+	loaded.load("output.rle");
+	cout << "loaded has " << loaded.getWidth() << " " << loaded.getHeight() << endl;
 }
 
 void testApp::update(){	
@@ -15,7 +19,7 @@ void testApp::draw(){
 	eyeshineDemoImage.draw(0, 0);
 	
 	ofSetColor(255, 0, 0);
-	rleImage.draw(); 
+	loaded.draw(); 
 
 	ofSetColor(255);
 	ofDrawBitmapString(ofToString((int) ofGetFrameRate()) + " fps", 10, 20);
