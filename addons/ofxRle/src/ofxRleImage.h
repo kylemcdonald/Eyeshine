@@ -4,15 +4,12 @@
 
 class RlePoint2d {
 public:
-	float x, y;
+	int x, y;
 };
 
 class ofxRleImage {
 	 friend ostream& operator<<(ostream& out, const ofxRleImage& img);
 	 friend istream& operator>>(istream& in, ofxRleImage& img);
-	
-private:
-	void decompress();
 	
 protected:
 	unsigned int width, height;
@@ -20,8 +17,11 @@ protected:
 	vector<RlePoint2d> lines;
 	
 public:
-	void compress(ofImage& img);
-	void draw() const;
+	ofxRleImage();
+	
+	void load(ofImage& img);
+	void update();
+	void draw(int x, int y) const;
 	unsigned int getWidth() const;
 	unsigned int getHeight() const;
 	

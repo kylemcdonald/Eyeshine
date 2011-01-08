@@ -6,7 +6,12 @@ bool ofxRleImage::useDrawOffset = false;
 // This is used for switching between the fast 8-byte compression technique and slower per-byte technique.
 bool ofxRleImage::useFastEncoding = false;
 
-void ofxRleImage::compress(ofImage& img) {
+ofxRleImage::ofxRleImage() :
+width(0),
+height(0) {
+}
+
+void ofxRleImage::load(ofImage& img) {
 	if(img.type == OF_IMAGE_GRAYSCALE) {
 		data.clear();
 		width = img.getWidth();
@@ -23,10 +28,12 @@ void ofxRleImage::compress(ofImage& img) {
 			
 			uint64_t *firstChunk = (uint64_t*) raw;
 			uint64_t *curChunk = &firstChunk[1];
-			uint64_t *lastChunk =	&firstChunk[(nPixels / bytesPerChunk) - 1];
+			uint64_t *lastChunk = &firstChunk[(nPixels / bytesPerChunk) - 1];
 			
 			// Note: I ignore the first 8 and last 8 bytes of the image, for now. 
 			// (that's the 1 and -1 above.)
+			firstChunk[0] = 0;
+			lastChunk[0] = 0;
 			
 			int pixelIndex = 0;
 			unsigned char prevVal = 0;
@@ -55,17 +62,21 @@ void ofxRleImage::compress(ofImage& img) {
 			}
 		} else {
 			// Slow but simple method. 
-			unsigned char curVal, prevVal;
+			unsigned char curVal;
+			unsigned char prevVal = 0;
 			for (int curIndex = 0; curIndex < nPixels; curIndex++){
-				prevVal = curVal;
 				curVal = raw[curIndex];
 				if (curVal != prevVal){
 					data.push_back(curIndex);
 				}
+				prevVal = curVal;
 			}
 		}
-			
-		decompress();
+		
+		// If there is an odd number of points, the last point must be closed.
+		if(data.size() % 2 == 1) {
+			data.push_back(nPixels - 1);
+		}
 	}
 }
 
@@ -77,33 +88,61 @@ unsigned int ofxRleImage::getHeight() const {
 	return height;
 }
 
-void ofxRleImage::decompress() {
+void ofxRleImage::update() {
 	// Convert RLE data into lines.
-	int nLineEndpoints = data.size();	
+	int nLineEndpoints = data.size();
 	lines.clear();
-	lines.resize(nLineEndpoints);
+	// a good guess for how much space is needed
+	lines.reserve(nLineEndpoints);
+	unsigned int prevRow = 0;
 	for (int i = 0; i < nLineEndpoints; i++){
-		int curIndex = data[i];	
-		RlePoint2d& curPoint = lines[i];
+		int curIndex = data[i];
+		RlePoint2d curPoint = lines[i];
 		curPoint.x = (curIndex % width);
 		curPoint.y = (curIndex / width);
+		
+		unsigned int curRow = curPoint.y;
+
+		// with end points
+		if(i % 2 == 1) {
+			// make sure any inbetween lines have been added
+			while(prevRow < curPoint.y) {
+				RlePoint2d rowEnd;
+				rowEnd.x = width;
+				rowEnd.y = prevRow;
+				prevRow++;
+				lines.push_back(rowEnd);
+				
+				RlePoint2d rowStart;
+				rowStart.x = 0;
+				rowStart.y = prevRow;
+				lines.push_back(rowStart);
+			}
+		}
+		
+		prevRow = curRow;
+		
+		lines.push_back(curPoint);
 	}
 }
 
-void ofxRleImage::draw() const {
-	glPushMatrix();
-	
-	if(useDrawOffset) {
-		glTranslatef(0, 1, 0);
-	}
+void ofxRleImage::draw(int x, int y) const {
+	if(lines.size()) {
+		glPushMatrix();
+		
+		glTranslatef(x, y, 0);
+		if(useDrawOffset) {
+			glTranslatef(0, 1, 0);
+		}
 
-	// Draw lines as a vertex array.
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, 0, &lines[0]);
-	glDrawArrays(GL_LINES, 0, lines.size());
-	glDisableClientState(GL_VERTEX_ARRAY);
-	
-	glPopMatrix();
+		// Draw lines as a vertex array.
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_INT, 0, &lines[0]);
+		glDrawArrays(GL_LINES, 0, lines.size());
+		glDisableClientState(GL_VERTEX_ARRAY);
+		
+		glPopMatrix();
+	}
 }
 
 /*
@@ -146,7 +185,6 @@ istream& operator>>(istream& in, ofxRleImage& img) {
 		unsigned int& cur = img.data[i];
 		in.read((char*) &(cur), sizeof(cur));
 	}
-	img.decompress();
 	
 	return in;
 }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D99BC3C12D7D549005E7460 /* ofxRleImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D99BC3A12D7D549005E7460 /* ofxRleImage.cpp */; };
+		3D99BD0112D7FCB0005E7460 /* ofxRleVideo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D99BD0012D7FCB0005E7460 /* ofxRleVideo.cpp */; };
 		3DE6219A12D655BE00333F19 /* libdc1394.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DE6219112D655BE00333F19 /* libdc1394.a */; };
 		3DE6219B12D655BE00333F19 /* ofxLibdc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DE6219412D655BE00333F19 /* ofxLibdc.cpp */; };
 		3DE6219C12D655BE00333F19 /* ofxLibdcGrabber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3DE6219612D655BE00333F19 /* ofxLibdcGrabber.cpp */; };
@@ -82,6 +84,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3D99BC3A12D7D549005E7460 /* ofxRleImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxRleImage.cpp; path = ../addons/ofxRle/src/ofxRleImage.cpp; sourceTree = SOURCE_ROOT; };
+		3D99BC3B12D7D549005E7460 /* ofxRleImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxRleImage.h; path = ../addons/ofxRle/src/ofxRleImage.h; sourceTree = SOURCE_ROOT; };
+		3D99BCFF12D7FCB0005E7460 /* ofxRleVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxRleVideo.h; sourceTree = "<group>"; };
+		3D99BD0012D7FCB0005E7460 /* ofxRleVideo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxRleVideo.cpp; sourceTree = "<group>"; };
 		3DABA25412D68611007895F7 /* RateTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RateTimer.h; sourceTree = "<group>"; };
 		3DE6217D12D655BE00333F19 /* dc1394.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dc1394.h; sourceTree = "<group>"; };
 		3DE6217E12D655BE00333F19 /* dc1394_camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dc1394_camera.h; sourceTree = "<group>"; };
@@ -185,6 +191,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3D99BC3812D7D549005E7460 /* ofxRle */ = {
+			isa = PBXGroup;
+			children = (
+				3D99BC3912D7D549005E7460 /* src */,
+			);
+			name = ofxRle;
+			path = ../addons/ofxRle;
+			sourceTree = SOURCE_ROOT;
+		};
+		3D99BC3912D7D549005E7460 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				3D99BC3A12D7D549005E7460 /* ofxRleImage.cpp */,
+				3D99BC3B12D7D549005E7460 /* ofxRleImage.h */,
+				3D99BCFF12D7FCB0005E7460 /* ofxRleVideo.h */,
+				3D99BD0012D7FCB0005E7460 /* ofxRleVideo.cpp */,
+			);
+			name = src;
+			path = ../addons/ofxRle/src;
+			sourceTree = SOURCE_ROOT;
+		};
 		3DE6215312D655BE00333F19 /* ofxLibdc */ = {
 			isa = PBXGroup;
 			children = (
@@ -285,6 +312,7 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
+				3D99BC3812D7D549005E7460 /* ofxRle */,
 				3DE6215312D655BE00333F19 /* ofxLibdc */,
 			);
 			name = addons;
@@ -656,6 +684,8 @@
 				3DE6219B12D655BE00333F19 /* ofxLibdc.cpp in Sources */,
 				3DE6219C12D655BE00333F19 /* ofxLibdcGrabber.cpp in Sources */,
 				3DE6219D12D655BE00333F19 /* ofxLibdcPtGrey.cpp in Sources */,
+				3D99BC3C12D7D549005E7460 /* ofxRleImage.cpp in Sources */,
+				3D99BD0112D7FCB0005E7460 /* ofxRleVideo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
