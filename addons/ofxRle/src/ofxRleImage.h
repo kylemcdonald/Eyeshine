@@ -21,7 +21,7 @@ public:
 	
 	void load(ofImage& img);
 	void update();
-	void draw(int x, int y) const;
+	void draw(int x = 0, int y = 0) const;
 	unsigned int getWidth() const;
 	unsigned int getHeight() const;
 	

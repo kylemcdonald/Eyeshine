@@ -45,9 +45,8 @@ istream& operator>>(istream& in, ofxRleVideo& video) {
 	in.read((char*) &(dataSize), sizeof(dataSize));
 	video.frames.resize(dataSize);
 	for(int i = 0; i < dataSize; i++) {
-		ofxRleImage* cur = video[i];
-		cur = new ofxRleImage();
-		in >> *cur;
+		video.frames[i] = new ofxRleImage();
+		in >> *(video.frames[i]);
 	}
 	
 	return in;

@@ -186,6 +186,8 @@ istream& operator>>(istream& in, ofxRleImage& img) {
 		in.read((char*) &(cur), sizeof(cur));
 	}
 	
+	img.update();
+	
 	return in;
 }
 
