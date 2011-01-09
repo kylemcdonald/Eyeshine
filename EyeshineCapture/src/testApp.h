@@ -5,6 +5,8 @@
 #include "RateTimer.h"
 #include "ofxRleImage.h"
 #include "ofxRleVideo.h"
+#include "PupilFinder.h"
+#include "ofxAutoControlPanel.h"
 
 class testApp : public ofBaseApp {
 public:
@@ -15,6 +17,7 @@ public:
 	
 	ofxLibdcPtGrey camera;
 	ofImage curFrame;
+	ofxCvGrayscaleImage curFrameCv;
 	ofImage thresholded;
 	ofxRleImage rleImage;
 	
@@ -23,5 +26,13 @@ public:
 	
 	RateTimer cameraFps;
 	
+	PupilFinder pupilFinder;
+	
+	unsigned int nativeWidth, nativeHeight;
 	unsigned int camWidth, camHeight;
+	
+	float adapThreshBlockSize, adapThreshConstant, minContourArea, maxContourArea, circularityThresh;
+	
+	ofxAutoControlPanel gui;
+	void setupControlPanel();
 };

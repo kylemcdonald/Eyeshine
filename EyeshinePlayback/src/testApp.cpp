@@ -1,6 +1,7 @@
 #include "testApp.h"
 
 void testApp::setup() {
+	ofSetFrameRate(24);
 	rleVideo.load("output.rlev");
 }
 
