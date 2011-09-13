@@ -18,6 +18,7 @@ protected:
 	
 public:
 	ofxRleImage();
+	/* ~ofxRleImage(); */
 	
 	void load(ofImage& img);
 	void update();
@@ -30,4 +31,7 @@ public:
 	
 	static bool useDrawOffset;
 	static bool useFastEncoding;
+	
+	void computeCentroid();
+	ofPoint centroid;
 };

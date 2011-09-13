@@ -13,6 +13,9 @@ height(0) {
 
 void ofxRleImage::load(ofImage& img) {
 	if(img.type == OF_IMAGE_GRAYSCALE) {
+		
+		centroid.x = centroid.y = 0;
+		
 		data.clear();
 		width = img.getWidth();
 		height = img.getHeight();
@@ -126,6 +129,26 @@ void ofxRleImage::update() {
 	}
 }
 
+//========================================================
+void ofxRleImage::computeCentroid(){
+	
+	float x = 0; 
+	float y = 0; 
+	
+	if (lines.size() > 0){
+		int n = lines.size();
+		for (int i=0; i<n; i++){
+			RlePoint2d curPoint = lines[i];
+			x += curPoint.x;
+			y += curPoint.y;
+		}
+		centroid.x = x/(float)n;
+		centroid.y = y/(float)n;
+	}
+}
+
+
+//========================================================
 void ofxRleImage::draw(int x, int y) const {
 	if(lines.size()) {
 		glPushMatrix();
