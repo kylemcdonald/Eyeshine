@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxBlur.h"
 
 class RateTimer {
 protected:
@@ -54,11 +55,6 @@ public:
 	void generateOffsets();
 	
 	ofVideoGrabber cam;
-	vector<ofFbo*> ping, pong;
-	
-	ofShader blurShader, combineShader;
-	
-	int reductions;
-	float reductionFactor;
+	ofxBlur blur;
 	RateTimer timer;
 };
