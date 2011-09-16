@@ -4,7 +4,7 @@
 
 class ofxBlur {
 protected:
-	vector<ofFbo*> ping, pong;
+	vector<ofFbo> ping, pong;
 	ofShader blurShader, combineShader;
 	
 	int radius;

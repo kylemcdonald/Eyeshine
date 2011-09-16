@@ -109,18 +109,14 @@ void ofxBlur::setup(int width, int height, int radius, int reductions, float red
 	}
 	
 	ofFbo::Settings settings;
+	ping.resize(reductions);
+	pong.resize(reductions);
 	for(int i = 0; i < reductions; i++) {
 		settings.width = width;
 		settings.height = height;
 		
-		ofFbo* curPing = new ofFbo();
-		ofFbo* curPong = new ofFbo();
-		
-		curPing->allocate(settings);
-		curPong->allocate(settings);
-		
-		ping.push_back(curPing);
-		pong.push_back(curPong);
+		ping[i].allocate(settings);
+		pong[i].allocate(settings);
 		
 		width *= reductionFactor;
 		height *= reductionFactor;
@@ -132,43 +128,43 @@ void ofxBlur::setScale(float scale) {
 }
 
 void ofxBlur::begin() {
-	ping[0]->begin();	
+	ping[0].begin();	
 }
 
 void ofxBlur::end(bool autoDraw) {
-	ping[0]->end();
+	ping[0].end();
 	
 	for(int i = 0; i < ping.size(); i++) {
-		ofFbo* curPing = ping[i];
-		ofFbo* curPong = pong[i];
+		ofFbo& curPing = ping[i];
+		ofFbo& curPong = pong[i];
 		
 		// resample previous result into ping
 		if(i > 0) {
-			curPing->begin();
-			int w = curPing->getWidth();
-			int h = curPing->getHeight();
+			curPing.begin();
+			int w = curPing.getWidth();
+			int h = curPing.getHeight();
 			ofSetColor(255);
-			ping[i - 1]->draw(0, 0, w, h);
-			curPing->end();
+			ping[i - 1].draw(0, 0, w, h);
+			curPing.end();
 		}
 		
 		// horizontal blur ping into pong
-		curPong->begin();
+		curPong.begin();
 		blurShader.begin();
-		blurShader.setUniformTexture("source", ping[i]->getTextureReference(), 0);
+		blurShader.setUniformTexture("source", curPing.getTextureReference(), 0);
 		blurShader.setUniform2f("direction", scale, 0);
-		ping[i]->draw(0, 0);
+		curPing.draw(0, 0);
 		blurShader.end();
-		curPong->end();
+		curPong.end();
 		
 		// vertical blur pong into ping
-		curPing->begin();
+		curPing.begin();
 		blurShader.begin();
-		blurShader.setUniformTexture("source", pong[i]->getTextureReference(), 0);
+		blurShader.setUniformTexture("source", curPong.getTextureReference(), 0);
 		blurShader.setUniform2f("direction", 0, scale);
-		pong[i]->draw(0, 0);
+		curPong.draw(0, 0);
 		blurShader.end();
-		curPing->end();
+		curPing.end();
 	}
 	
 	if(autoDraw) {
@@ -183,11 +179,11 @@ void ofxBlur::draw() {
 		combineShader.begin();
 		for(int i = 0; i < reductions; i++) {
 			string name = "s" + ofToString(i);
-			combineShader.setUniformTexture(name.c_str(), ping[i]->getTextureReference(), i);
+			combineShader.setUniformTexture(name.c_str(), ping[i].getTextureReference(), i);
 		}
 		ofEnableNormalizedTexCoords();
-		int w = ping[0]->getWidth();
-		int h = ping[0]->getHeight();
+		int w = ping[0].getWidth();
+		int h = ping[0].getHeight();
 		glBegin(GL_QUADS);
 		glTexCoord2i(0, 0); glVertex2i(0, 0);
 		glTexCoord2i(w, 0); glVertex2i(w, 0);
@@ -197,7 +193,7 @@ void ofxBlur::draw() {
 		ofDisableNormalizedTexCoords();
 		combineShader.end();
 	} else {
-		ping[0]->draw(0, 0);
+		ping[0].draw(0, 0);
 	}
 	ofPopStyle();
 }
