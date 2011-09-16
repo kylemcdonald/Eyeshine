@@ -1,28 +1,38 @@
+/*
+	only call setup() once. you must specify the width and height. radius
+	describes the radius of the blur kernel. the larger the radius, the slower the
+	blur. if you want a larger apparent radius at the same speed, use setScale(x)
+	where x>1. shape describes the circularity/squareness of the kernel. for a
+	more circular kernel, use smaller values like .2 and for a more square kernel
+	use larger values like 10. for more square kernels, rotating the kernel has
+	an obvious visual effect. use setRotation() to set the rotation of the kernel
+	in radians. finally, using the passes and downsample arguments you can run
+	the blur filter multiple times at different scales and ofxBlur will combine
+	the results for you. this can be used to create a more bloom-like or fog-like
+	effect.
+*/
+
 #pragma once
 
 #include "ofMain.h"
 
 class ofxBlur {
 protected:
-	vector<ofFbo> ping, pong;
+	vector<ofFbo*> ping, pong;
 	ofShader blurShader, combineShader;
-	
-	int radius;
-	int reductions;
-	float reductionFactor;
-	float scale;
+	float scale, rotation;
+	float downsample;
 public:
 	ofxBlur();
-
-	// change reductions to be 0 based
-	// change ofFbo* to be ofFbo for reallocation
-	// change reduction name to multipass
-	// add variance setting
-	void setup(int width, int height, int radius = 32, int reductions = 1, float reductionFactor = .5);
+	
+	void setup(int width, int height, int radius = 32, float shape = .2, int passes = 1, float downsample = .5);
 	
 	void setScale(float scale);
+	void setRotation(float rotation);
 	
 	void begin();
 	void end(bool autoDraw = true);
 	void draw();
 };
+
+// <3 kyle

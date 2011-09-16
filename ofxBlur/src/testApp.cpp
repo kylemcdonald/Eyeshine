@@ -1,14 +1,16 @@
 #include "testApp.h"
 
 void testApp::setup() {
-	cam.initGrabber(1280, 720);
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	cam.initGrabber(640, 480);
 	
-	blur.setup(ofGetWidth(), ofGetHeight());
+	blur.setup(cam.getWidth(), cam.getHeight());
 }
 
 void testApp::update() {	
 	cam.update();
-	blur.setScale(ofMap(mouseX, 0, ofGetWidth(), 0, 4));
+	blur.setScale(ofMap(mouseX, 0, ofGetWidth(), 1, 4));
+	blur.setRotation(ofMap(mouseY, 0, ofGetHeight(), -PI, PI));
 }
 
 void testApp::draw() {
@@ -18,9 +20,8 @@ void testApp::draw() {
 	ofSetColor(255);
 	cam.draw(0, 0);
 	ofSetCircleResolution(64);
-	ofCircle(mouseX, mouseY, 100);
+	ofCircle(mouseX, mouseY, 32);
 	blur.end();
 	
-	timer.tick();
-	ofDrawBitmapString(ofToString((int) timer.getPeriodMilliseconds()) + " ms", 10, 20);
+	ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
 }
