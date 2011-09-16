@@ -74,7 +74,11 @@ string generateCombineSource(int passes, float downsample) {
 	}
 	stringstream src;
 	src << "uniform sampler2DRect " << ofJoinString(combineNames, ",") << ";\n";
-	src << "const float scaleFactor = " << downsample << ";\n";
+	if(downsample == 1) {
+		src << "const float scaleFactor = 1.;\n";
+	} else {
+		src << "const float scaleFactor = " << downsample << ";\n";
+	}
 	src << "void main(void) {\n";
 	src << "\tvec2 tc = gl_TexCoord[0].st;\n";
 	for(int i = 0; i < passes; i++) {
