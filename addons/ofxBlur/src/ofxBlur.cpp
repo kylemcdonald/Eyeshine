@@ -74,6 +74,7 @@ string generateCombineSource(int passes, float downsample) {
 	}
 	stringstream src;
 	src << "uniform sampler2DRect " << ofJoinString(combineNames, ",") << ";\n";
+	src << "uniform float brightness;\n";
 	if(downsample == 1) {
 		src << "const float scaleFactor = 1.;\n";
 	} else {
@@ -87,7 +88,7 @@ string generateCombineSource(int passes, float downsample) {
 		src << (i + 1 != passes ? " tc *= scaleFactor;" : "");
 		src << "\n";
 	}
-	//src << "\tgl_FragColor /= " << passes << ".;\n";
+	src << "\tgl_FragColor *= brightness / " << passes << ".;\n";
 	src << "}\n";
 	return src.str();
 }
@@ -136,11 +137,15 @@ void ofxBlur::setRotation(float rotation) {
 	this->rotation = rotation;
 }
 
+void ofxBlur::setBrightness(float brightness) {
+	this->brightness = brightness;
+}
+
 void ofxBlur::begin() {
 	ping[0]->begin();	
 }
 
-void ofxBlur::end(bool autoDraw) {
+void ofxBlur::end() {
 	ping[0]->end();
 	
 	ofVec2f xDirection = ofVec2f(scale, 0).getRotatedRad(rotation);
@@ -177,10 +182,6 @@ void ofxBlur::end(bool autoDraw) {
 		blurShader.end();
 		curPing->end();
 	}
-	
-	if(autoDraw) {
-		draw();
-	}
 }
 
 void ofxBlur::draw() {
@@ -204,6 +205,7 @@ void ofxBlur::draw() {
 			string name = "s" + ofToString(i);
 			combineShader.setUniformTexture(name.c_str(), ping[i]->getTextureReference(), i + 1);
 		}
+		combineShader.setUniform1f("brightness", brightness);
 		mesh.drawFaces();
 		combineShader.end();
 	} else {

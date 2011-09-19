@@ -34,6 +34,9 @@ public:
 				hide();
 			}
 		}
+		if(event.key == 'f') {
+			ofToggleFullscreen();
+		}
 	}
 	void show() {
 		ofxControlPanel::show();

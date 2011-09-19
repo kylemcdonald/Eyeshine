@@ -22,6 +22,7 @@ protected:
 	ofShader blurShader, combineShader;
 	float scale, rotation;
 	float downsample;
+	float brightness;
 public:
 	ofxBlur();
 	
@@ -29,9 +30,10 @@ public:
 	
 	void setScale(float scale);
 	void setRotation(float rotation);
+	void setBrightness(float brightness); // only applies to multipass
 	
 	void begin();
-	void end(bool autoDraw = true);
+	void end();
 	void draw();
 };
 

@@ -4,20 +4,21 @@
 
 string cameraFilterSource = stringify(
 uniform float distortion;
+uniform float distortionSize;
 uniform float aberrationAmount;
 uniform float vignetteSharpness;
 uniform float vignetteSize;
 uniform float noiseAmount;
 uniform vec2 imageSize;
 uniform float imageRadius;
-uniform float brightness;
 
 // configurable
 const int aberrationSteps = 32;
 
 // setup per-frame
 uniform float time;
-uniform sampler2DRect tex;
+uniform sampler2DRect preblur;
+uniform sampler2DRect postblur;
 
 // pre-computed
 const float HALF_PI = 3.1415926 / 2.;
@@ -55,10 +56,12 @@ float rand(vec2 coord){
 void main(void) {
 	vec2 tc = gl_TexCoord[0].st;
 
-	vec2 P = (2. * tc / imageSize) - 1.;
-	vec2 Pp = P / (1. - distortion * dot(P, P));
 	vec2 imageCenter = imageSize / 2.;
-	tc = (Pp + 1.) * imageCenter;
+	vec2 P = (tc / imageCenter) - 1.; // to normalized image coordinates
+	P /= distortionSize;
+	vec2 Pp = P / (1. - distortion * dot(P, P));
+	P *= distortionSize;
+	tc = (Pp + 1.) * imageCenter;  // back to pixel coordinates
 
 	vec2 fromCenter = tc - imageCenter;
 	float radius = sqrt(dot(fromCenter, fromCenter));
@@ -68,7 +71,7 @@ void main(void) {
 	float aberrationScale = aberrationAmount / float(aberrationSteps);
 	for(int i = 0; i < aberrationSteps; i++) {
 		vec2 curCoord = imageCenter + fromCenter * (1. - aberrationScale * float(i));
-		vec3 curColor = texture2DRect(tex, curCoord).rgb;
+		vec3 curColor = texture2DRect(postblur, curCoord).rgb;
 		float curHue = float(i) / float(aberrationSteps);
 		aberration += curColor * HueToRGB(1. - curHue); // 1. - switches the red/blue
 	}
@@ -78,8 +81,10 @@ void main(void) {
 	vignette = .5 - (vignette * .5); // scale from -1 to 1 onto 1 to 0
 
 	float noise = rand((tc / imageSize) * time) * noiseAmount;
+	
+	vec3 original = texture2DRect(preblur, tc).rgb;
 
-	vec3 finalColor = (aberration * vignette * brightness) + noise;
+	vec3 finalColor = ((original + aberration) * vignette) + noise;
 	gl_FragColor = vec4(finalColor, 1.);
 }
 );

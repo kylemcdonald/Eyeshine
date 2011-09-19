@@ -897,9 +897,9 @@
 		27FD214314267078006B984E /* src */ = {
 			isa = PBXGroup;
 			children = (
-				27FD214414267078006B984E /* CameraFilter.frag.h */,
 				27FD214514267078006B984E /* ofxCameraFilter.cpp */,
 				27FD214614267078006B984E /* ofxCameraFilter.h */,
+				27FD214414267078006B984E /* CameraFilter.frag.h */,
 			);
 			name = src;
 			path = ../addons/ofxCameraFilter/src;

@@ -5,15 +5,14 @@
 
 class ofxCameraFilter {
 protected:
-	ofFbo fbo;
+	ofFbo preblur, postblur;
 	ofxBlur blur;
 	ofShader shader;
 	
-	float distortion;
+	float distortion, distortionSize;
 	float aberrationAmount;
 	float noiseAmount;
 	float vignetteSharpness, vignetteSize;
-	float brightness;
 public:
 	ofxCameraFilter();
 	void setup(int width, int height);
@@ -23,10 +22,11 @@ public:
 	
 	void setBlurScale(float scale);
 	void setBlurRotation(float rotation);
+	void setBlurBrightness(float brightness);
 	void setDistortion(float distortion);
+	void setDistortionSize(float distortionSize);
 	void setAberrationAmount(float aberrationAmount);
 	void setNoiseAmount(float noiseAmount);
 	void setVignetteSharpness(float vignetteSharpness);
 	void setVignetteSize(float vignetteSize);
-	void setBrightness(float brightness);
 };

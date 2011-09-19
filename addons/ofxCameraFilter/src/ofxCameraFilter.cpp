@@ -12,38 +12,47 @@ ofxCameraFilter::ofxCameraFilter()
 
 void ofxCameraFilter::setup(int width, int height) {
 ofSetLogLevel(OF_LOG_VERBOSE);
-	fbo.allocate(width, height);
-	blur.setup(width, height, 12, .1, 4, .4);
+	preblur.allocate(width, height);
+	postblur.allocate(width, height);
+	blur.setup(width, height, 12, .1, 6, .8);
 	shader.setupShaderFromSource(GL_FRAGMENT_SHADER, cameraFilterSource);
 	shader.linkProgram();
 }
 
 void ofxCameraFilter::begin() {
-	blur.begin();
-	ofClear(0, 0, 0, 255);
+	preblur.begin();
+	ofClear(0, 255);
 }
 
 void ofxCameraFilter::end() {
-	blur.end(false);
-	fbo.begin();
-	ofClear(0);
+	preblur.end();
+	
+	blur.begin();
+	ofClear(0, 255);
+	preblur.draw(0, 0);
+	blur.end();
+	
+	postblur.begin();
+	ofClear(0, 255);
 	blur.draw();
-	fbo.end();
+	postblur.end();
 }
 
-void ofxCameraFilter::draw() {	
-	shader.begin();		
-	shader.setUniformTexture("tex", fbo.getTextureReference(), 1);
+void ofxCameraFilter::draw() {
+	ofPushStyle();
+	shader.begin();
+	shader.setUniformTexture("preblur", preblur.getTextureReference(), 1);
+	shader.setUniformTexture("postblur", postblur.getTextureReference(), 2);
 	shader.setUniform1f("time", ofGetElapsedTimef());
-	shader.setUniform2f("imageSize", fbo.getWidth(), fbo.getHeight());
-	shader.setUniform1f("imageRadius", ofDist(0, 0, fbo.getWidth(), fbo.getHeight()) / 2.);
+	shader.setUniform2f("imageSize", preblur.getWidth(), preblur.getHeight());
+	shader.setUniform1f("imageRadius", ofDist(0, 0, preblur.getWidth(), preblur.getHeight()) / 2.);
 	shader.setUniform1f("distortion", distortion);
+	shader.setUniform1f("distortionSize", distortionSize);
 	shader.setUniform1f("aberrationAmount", aberrationAmount);
 	shader.setUniform1f("vignetteSharpness", vignetteSharpness);
 	shader.setUniform1f("vignetteSize", vignetteSize);
 	shader.setUniform1f("noiseAmount", noiseAmount);
-	shader.setUniform1f("brightness", brightness);
-	fbo.draw(0, 0);
+	preblur.draw(0, 0);
 	shader.end();
 }
 
@@ -55,8 +64,16 @@ void ofxCameraFilter::setBlurRotation(float rotation) {
 	blur.setRotation(rotation);
 }
 
+void ofxCameraFilter::setBlurBrightness(float brightness) {
+	blur.setBrightness(brightness);
+}
+
 void ofxCameraFilter::setDistortion(float distortion) {
 	this->distortion = distortion;
+}
+
+void ofxCameraFilter::setDistortionSize(float distortionSize) {
+	this->distortionSize = distortionSize;
 }
 
 void ofxCameraFilter::setAberrationAmount(float aberrationAmount) {
@@ -73,8 +90,4 @@ void ofxCameraFilter::setVignetteSharpness(float vignetteSharpness) {
 
 void ofxCameraFilter::setVignetteSize(float vignetteSize) {
 	this->vignetteSize = vignetteSize;
-}
-
-void ofxCameraFilter::setBrightness(float brightness) {
-	this->brightness = brightness;
 }

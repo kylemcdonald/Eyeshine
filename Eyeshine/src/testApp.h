@@ -36,7 +36,9 @@ public:
 	long startDiagnosticTime;
 	
 	void drawEyeshineDiagnostic();
+	void drawEyeshineDiagnosticOverlay();
 	void drawEyeshineDisplay();
+	void drawEyeshineDisplayOverlay();
 	
 	int  nAccessibleLibdcCameras;
 	ofxLibdcPtGrey		camera;
@@ -61,6 +63,7 @@ public:
 	
 	int currentPreviewVideoIndex; 
 	void drawEyeshinePreview();
+	void drawEyeshinePreviewOverlay();
 	void loadVideo (int which);
 	
 	//---------------------------------

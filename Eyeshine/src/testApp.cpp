@@ -3,12 +3,6 @@
 //=========================================================================
 void testApp::setup() {
 	cameraFilter.setup(1280, 1024);//ofGetWidth(), ofGetHeight());
-	cameraFilter.setAberrationAmount(0.03);
-	cameraFilter.setBlurScale(0.8);
-	cameraFilter.setDistortion(0.04);
-	cameraFilter.setNoiseAmount(0.05);
-	//cameraFilter.setVignetteSize(1);
-	cameraFilter.setBrightness(4 * 8);
 	
 	handyString = new char[128];
 	currentEyeshineMode = EYESHINE_DIAGNOSTIC;
@@ -123,13 +117,8 @@ void testApp::setupDisplay(){
 //=========================================================================
 void testApp::setupControlPanel(){
 	gui.setup("EyeShine", 20, 70, 300, 500);
-	gui.addPanel(" Capture Controls", 1);
-	gui.addPanel(" Display Controls", 1);
-	gui.addPanel(" Detection Controls", 1);	
 	
-	// Capture controls
-	gui.setWhichPanel(0);
-	gui.setWhichColumn(0);
+	gui.addPanel(" Capture Controls", 1);
 	gui.addToggle("Naive", "NAIVE", false);
 	gui.addToggle("Draw Offset", "DRAW_OFFSET", true);
 	gui.addSlider("AdapThresh BlockSize", "ADAPTHRESH_BLOCKSIZE", 10, 1, 25, true);	
@@ -138,21 +127,27 @@ void testApp::setupControlPanel(){
 	gui.addSlider("MaxContourArea", "MAX_CONTOUR_AREA", 700, 0, 1000, true);
 	gui.addSlider("CircularityThresh", "CIRCULARITY_THRESH", 0.5, 0, 1.0, false);
 	
-	// Display controls
-	gui.setWhichPanel(1);
-	gui.setWhichColumn(0);
+	gui.addPanel(" Display Controls", 1);
 	gui.addToggle("LoadAllAtStart", "LOAD_ALL_AT_START", true);
 	gui.addSlider("FetchVideoProbability", "FETCH_VIDEO_PROBABILITY", 0.005, 0.000, 0.025, false);	
 	gui.addSlider("MaxNVideos", "MAX_N_VIDEOS", 25, 1, 60, true); 
 	
-	// Detection controls
-	gui.setWhichPanel(2);
-	gui.setWhichColumn(0);
+	gui.addPanel(" Detection Controls", 1);	
 	gui.addSlider("FrameDiffThreshold", "FRAME_DIFF_THRESHOLD", 40, 1, 255, true);	
 	gui.addSlider("LoMotionThreshold", "LO_MOTION_THRESHOLD", 0.010, 0.000, 0.300, false);
 	gui.addSlider("HiMotionThreshold", "HI_MOTION_THRESHOLD", 0.300, 0.100, 0.500, false);
 	gui.addSlider("MinRecordingLength", "MIN_RECORDING_LENGTH", 1.0, 0.5, 5.0, false);
 	
+	gui.addPanel(" Shader Controls", 1);
+	gui.addToggle("EnableShader", "ENABLE_SHADER", true);
+	gui.addSlider("BlurScale", "BLUR_SCALE", .3, 0, 1.5);
+	gui.addSlider("BlurBrightness", "BLUR_BRIGHTNESS", 8, 0, 16);
+	gui.addSlider("LensDistortion", "LENS_DISTORTION", .08, -1, 1);
+	gui.addSlider("LensDistortionSize", "LENS_DISTORTION_SIZE", 1.12, 0, 2);
+	gui.addSlider("AberrationAmount", "ABERRATION_AMOUNT", .02, 0, .2);
+	gui.addSlider("NoiseAmount", "NOISE_AMOUNT", .05, 0, .15);
+	gui.addSlider("VignetteSharpness", "VIGNETTE_SHARPNESS", 8, 0, 10);
+	gui.addSlider("VignetteSize", "VIGNETTE_SIZE", .8, 0, 1);
 	
 	gui.loadSettings("settings/controlPanelSettings.xml");
 }
@@ -275,6 +270,15 @@ void testApp::updateWhetherOrNotWeAreRecording(){
 
 //=========================================================================
 void testApp::updateDisplay(){
+	
+	cameraFilter.setBlurScale(gui.getValueF("BLUR_SCALE"));
+	cameraFilter.setBlurBrightness(gui.getValueF("BLUR_BRIGHTNESS"));
+	cameraFilter.setDistortion(gui.getValueF("LENS_DISTORTION"));
+	cameraFilter.setDistortionSize(gui.getValueF("LENS_DISTORTION_SIZE"));
+	cameraFilter.setAberrationAmount(gui.getValueF("ABERRATION_AMOUNT"));
+	cameraFilter.setNoiseAmount(gui.getValueF("NOISE_AMOUNT"));
+	cameraFilter.setVignetteSharpness(gui.getValueF("VIGNETTE_SHARPNESS"));
+	cameraFilter.setVignetteSize(gui.getValueF("VIGNETTE_SIZE"));
 	 
 	if (currentEyeshineMode == EYESHINE_DISPLAY){
 		
@@ -294,35 +298,56 @@ void testApp::updateDisplay(){
 }
 
 //=========================================================================
-void testApp::draw() {
-	ofClear(0, 0, 0, 255);
+void testApp::draw() {	
 	
-	cameraFilter.begin();
+	bool shading = gui.getValueB("ENABLE_SHADER");
+	if(shading) {
+		cameraFilter.begin();
+	}
 	
 	switch (currentEyeshineMode){
 			
 		//--------------------
 		case EYESHINE_DIAGNOSTIC:
 			drawEyeshineDiagnostic();
-			gui.show();
 			break;
 		
 		//--------------------
 		case EYESHINE_PREVIEW:
 			drawEyeshinePreview();
-			gui.hide();
 			break;
 			
 		//--------------------
 		default:
 		case EYESHINE_DISPLAY:
 			drawEyeshineDisplay();
-			gui.hide();
 			break;
 	}
 	
-	cameraFilter.end();
-	cameraFilter.draw();
+	if(shading) {
+		cameraFilter.end();
+		cameraFilter.draw();
+	}
+	
+	switch (currentEyeshineMode){
+			
+		//--------------------
+		case EYESHINE_DIAGNOSTIC:
+			drawEyeshineDiagnosticOverlay();
+			break;
+		
+		//--------------------
+		case EYESHINE_PREVIEW:
+			drawEyeshinePreviewOverlay();
+			break;
+			
+		//--------------------
+		default:
+		case EYESHINE_DISPLAY:
+			drawEyeshineDisplayOverlay();
+			break;
+	}
+	
 }
 
 
@@ -331,21 +356,14 @@ void testApp::draw() {
 //=========================================================================
 void testApp::drawEyeshineDiagnostic(){
 	
-	//-------------------------------------------
-	// jump out of diagnostic mode after a timeout
-	long now = ofGetElapsedTimeMillis();
-	long elapsed = now - startDiagnosticTime; 
-	long remaining =  (drawInformationDuration - elapsed)/1000;
-	if ((now - startDiagnosticTime) > drawInformationDuration){
-		currentEyeshineMode = EYESHINE_DISPLAY;
-	}
-	
 	ofBackground(0,0,0);
 	ofShowCursor();
 	glDisable(GL_LINE_SMOOTH);
 	
 	ofSetColor(255);
-	currFrame.draw(0, 0);
+	if(currFrame.getTextureReference().isAllocated()) {
+		currFrame.draw(0, 0);
+	}
 
 	if(bRecording) {
 		ofSetColor(255, 0, 0);
@@ -356,8 +374,19 @@ void testApp::drawEyeshineDiagnostic(){
 	
 	ofSetColor(255);
 	cvSmallFrameDiff.draw(ofGetWidth()-smallWidth-10,10,smallWidth,smallHeight);
-	
+}
 
+//=========================================================================
+void testApp::drawEyeshineDiagnosticOverlay(){
+	//-------------------------------------------
+	// jump out of diagnostic mode after a timeout
+	long now = ofGetElapsedTimeMillis();
+	long elapsed = now - startDiagnosticTime; 
+	long remaining =  (drawInformationDuration - elapsed)/1000;
+	if ((now - startDiagnosticTime) > drawInformationDuration){
+		currentEyeshineMode = EYESHINE_DISPLAY;
+	}
+	
 	ofSetColor(255, 144, 0);
 	ofDrawBitmapString("Switching to display view (key 'v') in: " + ofToString(remaining), 10, 20);
 	if (nAccessibleLibdcCameras > 0){
@@ -377,15 +406,52 @@ void testApp::drawEyeshineDiagnostic(){
 void testApp::drawEyeshineDisplay(){
 	
 	ofBackground(0,0,0);
-	ofHideCursor();
 	if (bEnableLineSmooth){
 		glEnable(GL_LINE_SMOOTH);
 	} else {
 		glDisable(GL_LINE_SMOOTH);
 	}
 	
+	//-------------------------
+	// draw all of the other eyeshine videos. 
+	
+	// not sure what effect this was having
+	//ofEnableAlphaBlending();
+	//huntForBlendFunc(2000, 4,6);
+	
+	float videoAlpha01 = 0.65;
+	for (int i=0; i<nVideos; i++){
+		glPushMatrix();
+		
+		ofPoint col = videos[i]->color;
+		ofSetColor(col.x, col.y, col.z, videoAlpha01*255.0);
+		videos[i]->draw();
+		
+		glPopMatrix();
+	}
 	
 	//-------------------------
+	// draw the current eyeshine image, in white. 
+	float targetR = 255;
+	float targetG = 245;
+	float targetB = 235;
+	if(bRecording) {
+		targetR = 255;
+		targetG =  65;
+		targetB = 0;
+	}
+	float A = 0.85;
+	float B = 1.0-A;
+	hiliteR = A*hiliteR + B*targetR;
+	hiliteG = A*hiliteG + B*targetG;
+	hiliteB = A*hiliteB + B*targetB;
+	ofSetColor(hiliteR,hiliteG,hiliteB, 220);
+	rleImage.draw(0, 0);
+	
+}
+//=========================================================================
+void testApp::drawEyeshineDisplayOverlay(){
+
 	if (bDrawInformation){
 		
 		// only display this for one minute. 
@@ -421,43 +487,6 @@ void testApp::drawEyeshineDisplay(){
 		}
 	}
 	
-	//-------------------------
-	// draw all of the other eyeshine videos. 
-	//ofEnableAlphaBlending();
-	//huntForBlendFunc(2000, 4,6);
-	
-	float videoAlpha01 = 0.65;
-	for (int i=0; i<nVideos; i++){
-		glPushMatrix();
-		
-		ofPoint col = videos[i]->color;
-		ofSetColor(col.x, col.y, col.z, videoAlpha01*255.0);
-		videos[i]->draw();
-		
-		glPopMatrix();
-	}
-	
-	//-------------------------
-	// draw the current eyeshine image, in white. 
-	float targetR = 255;
-	float targetG = 245;
-	float targetB = 235;
-	if(bRecording) {
-		targetR = 255;
-		targetG =  65;
-		targetB = 0;
-	}
-	float A = 0.85;
-	float B = 1.0-A;
-	hiliteR = A*hiliteR + B*targetR;
-	hiliteG = A*hiliteG + B*targetG;
-	hiliteB = A*hiliteB + B*targetB;
-	ofSetColor(hiliteR,hiliteG,hiliteB, 220);
-	rleImage.draw(0, 0);
-	
-	
-	
-	
 }
 
 
@@ -465,8 +494,14 @@ void testApp::drawEyeshineDisplay(){
 //=========================================================================
 void testApp::drawEyeshinePreview(){
 	ofBackground(0,0,0);
-	ofHideCursor();
 		
+	ofSetColor(255,255,255);
+	videos[0]->draw();
+}
+
+//=========================================================================
+void testApp::drawEyeshinePreviewOverlay(){
+	
 	ofSetColor(255, 0, 0);
 	int curF    = videos[0]->currentFrame;
 	int nFra    = videos[0]->getNFrames();
@@ -474,8 +509,6 @@ void testApp::drawEyeshinePreview(){
 	sprintf(handyString, "%s\t %4d / %4d", fName, curF, nFra); 
 	ofDrawBitmapString(handyString, 10, 20);
 	
-	ofSetColor(255,255,255);
-	videos[0]->draw();
 }
 
 //============================================================
@@ -563,12 +596,15 @@ void testApp::keyPressed(int key) {
 		case 'V':
 			switch (currentEyeshineMode){
 				case EYESHINE_DIAGNOSTIC:
+					gui.show();
 					currentEyeshineMode = EYESHINE_DISPLAY;
 					break;
 				case EYESHINE_PREVIEW:
+					gui.show();
 					currentEyeshineMode = EYESHINE_DIAGNOSTIC;
 					break;
 				case EYESHINE_DISPLAY:
+					gui.hide();
 					currentEyeshineMode = EYESHINE_DIAGNOSTIC;
 					break;
 				
@@ -618,11 +654,6 @@ void testApp::keyPressed(int key) {
 		//--------------------
 		case 'a':
 			bEnableLineSmooth = !bEnableLineSmooth;
-			break;
-			
-		//--------------------
-		case 'f':
-			ofToggleFullscreen();
 			break;
 			
 	}
