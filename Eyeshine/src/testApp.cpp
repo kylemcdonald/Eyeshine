@@ -2,6 +2,13 @@
 
 //=========================================================================
 void testApp::setup() {
+	cameraFilter.setup(1280, 1024);//ofGetWidth(), ofGetHeight());
+	cameraFilter.setAberrationAmount(0.03);
+	cameraFilter.setBlurScale(0.8);
+	cameraFilter.setDistortion(0.04);
+	cameraFilter.setNoiseAmount(0.05);
+	//cameraFilter.setVignetteSize(1);
+	cameraFilter.setBrightness(4 * 8);
 	
 	handyString = new char[128];
 	currentEyeshineMode = EYESHINE_DIAGNOSTIC;
@@ -67,7 +74,6 @@ void testApp::setupDisplay(){
 	
 	ofSetVerticalSync(true);
 	ofSetFrameRate(30);//24
-	ofBackground(0);
 	bEnableLineSmooth = true;
 	
 	colorSourceImage.loadImage("images/turner.jpg");
@@ -289,6 +295,9 @@ void testApp::updateDisplay(){
 
 //=========================================================================
 void testApp::draw() {
+	ofClear(0, 0, 0, 255);
+	
+	cameraFilter.begin();
 	
 	switch (currentEyeshineMode){
 			
@@ -312,7 +321,8 @@ void testApp::draw() {
 			break;
 	}
 	
-
+	cameraFilter.end();
+	cameraFilter.draw();
 }
 
 
@@ -413,8 +423,8 @@ void testApp::drawEyeshineDisplay(){
 	
 	//-------------------------
 	// draw all of the other eyeshine videos. 
-	ofEnableAlphaBlending();
-	huntForBlendFunc(2000, 4,6);
+	//ofEnableAlphaBlending();
+	//huntForBlendFunc(2000, 4,6);
 	
 	float videoAlpha01 = 0.65;
 	for (int i=0; i<nVideos; i++){
@@ -608,6 +618,11 @@ void testApp::keyPressed(int key) {
 		//--------------------
 		case 'a':
 			bEnableLineSmooth = !bEnableLineSmooth;
+			break;
+			
+		//--------------------
+		case 'f':
+			ofToggleFullscreen();
 			break;
 			
 	}

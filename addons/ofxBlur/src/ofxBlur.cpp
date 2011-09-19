@@ -87,9 +87,8 @@ string generateCombineSource(int passes, float downsample) {
 		src << (i + 1 != passes ? " tc *= scaleFactor;" : "");
 		src << "\n";
 	}
-	src <<
-	"\tgl_FragColor /= " << passes << ".;\n"<<
-	"}\n";
+	//src << "\tgl_FragColor /= " << passes << ".;\n";
+	src << "}\n";
 	return src.str();
 }
 

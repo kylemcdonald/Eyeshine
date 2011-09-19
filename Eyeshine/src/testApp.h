@@ -8,6 +8,7 @@
 #include "PupilFinder.h"
 #include "ofxAutoControlPanel.h"
 #include "DatumHistorian.h"
+#include "ofxCameraFilter.h"
 
 enum EyeshineMode {
 	EYESHINE_DIAGNOSTIC,
@@ -99,4 +100,5 @@ public:
 	float hiliteG;
 	float hiliteB;
 
+	ofxCameraFilter cameraFilter;
 };

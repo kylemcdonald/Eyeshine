@@ -3,8 +3,9 @@
 void testApp::setup() {
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	//ofSetVerticalSync(true);
-	cam.initGrabber(640, 480);
-	filter.setup(cam.getWidth(), cam.getHeight());
+	
+	filter.setup(1280, 1024);
+	debug = false;
 	
 	ofSetCircleResolution(64);
 	grid.setMode(OF_PRIMITIVE_LINES);
@@ -19,27 +20,24 @@ void testApp::setup() {
 }
 
 void testApp::update() {	
-	cam.update();
-	if(cam.isFrameNew()) {
-	}
+	filter.begin();
+	ofClear(0);
+	ofCircle(mouseX, mouseY, 32);
+	//grid.draw();
+	filter.end();
 }
 
 void testApp::draw() {
 	ofBackground(0);
 	
-	filter.begin();
 	ofSetColor(255);
-	cam.draw(0, 0);
-	ofCircle(mouseX, mouseY, 32);
-	grid.draw();
-	filter.end();
-	
 	filter.draw();
+
 	ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
 }
 
 void testApp::keyPressed(int key) {
-	if(key == ' ') {
-		filter.reload();
+	if(key == 'd') {
+		debug = !debug;
 	}
 }
