@@ -61,6 +61,8 @@ void testApp::setupCapture(){
 	
 	motionHistorian = new DatumHistorian();
 	startRecordingTimeMs = 0; 
+	
+	gui.hide();
 }
 
 //=========================================================================
